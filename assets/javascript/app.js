@@ -2,7 +2,8 @@ $(document).ready(function () {
 
 
     //Global variables
-    var counter = 45;
+    var counter = 30;
+    var intervalId;
     var correctAns = 0;
     var incorrect = 0;
 
@@ -30,7 +31,7 @@ $(document).ready(function () {
 
     //Load questions and answers to the DOM
 
-    function loadscreen() {
+    function loadScreen() {
 
         for (var i = 0; i < quiz.length; i++) {
             $("#questions").append("<p>" + quiz[i].question + "</p>");
@@ -46,7 +47,7 @@ $(document).ready(function () {
     //Check answers and display correct and incorrect to DOM
 
     function checkAnswers() {
-        $("button").click(function () {
+        $("#submit").click(function () {
             for (var i = 0; i < quiz.length; i++) {
                 $.each($("input[name='question-" + i + "']:checked"), function () {
                     console.log($(this));
@@ -55,19 +56,23 @@ $(document).ready(function () {
                         correctAns++;
                         $("#correctAns").html("Correct Answers: " + correctAns);
                         console.log(correctAns);
+
                     }
-                    else if (userGuess !== quiz[i].correct){
+                    else {
                         incorrect++;
                         $("#incorrect").html("Incorrect Answers: " + incorrect);
                     }
                 });
             };
+            clearInterval(intervalId);
         });
     };
 // 3 timer functions - set time, decrement time and stop time
     function createTimer() {
-        timer = setInterval(decrementTime, 1000);
-        clearInterval();
+        counter = 30;
+        clearInterval(intervalId);
+        intervalId = setInterval(decrementTime, 1000);
+
     };
 
     function decrementTime() {
@@ -79,12 +84,32 @@ $(document).ready(function () {
     };
 
     function stopTimer() {
-        $(".container").html("You ran out of time!");
+        clearInterval(intervalId);
+        $("#questions").html("You ran out of time!<br>");
+        // playAgain();
 
     };
 
-    loadscreen();
+    // Play again function
+    function playAgain() {
+    
+            correctAns = 0;
+            incorrect = 0;
+            counter = 30;
+            intervalId;
+            $("#questions").empty();
+            $("#correctAns").empty();
+            $("#incorrect").empty();
+            $("#timer").empty();
+            loadScreen();
+            createTimer();
+            decrementTime();
+    };
+
+    $("#playagain").click(playAgain);
+    loadScreen();
     checkAnswers();
     createTimer();
+    decrementTime();
 
 });
